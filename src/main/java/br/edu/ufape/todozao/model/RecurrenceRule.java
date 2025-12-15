@@ -22,14 +22,13 @@ public class RecurrenceRule {
     @Column(name = "recurrence_type")
     private String recurrenceType;
 
-<<<<<<< HEAD
-    @Column(name = "interval_value")
-    private int interval;
-=======
+
+
     @Min(value = 1, message = "O intervalo deve ser maior que zero")
     @NotNull(message = "O intervalo é obrigatório")
+    @Column(name = "interval_value")
     private Integer interval;
->>>>>>> upstream/main
+
 
     @Column(name = "end_date")
     private String endDate;
