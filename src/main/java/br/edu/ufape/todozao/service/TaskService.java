@@ -1,13 +1,13 @@
 package br.edu.ufape.todozao.service;
 
 import br.edu.ufape.todozao.dto.TaskCreateDTO;
+import br.edu.ufape.todozao.exception.*;
 import br.edu.ufape.todozao.model.Project;
 import br.edu.ufape.todozao.model.Task;
 import br.edu.ufape.todozao.model.TaskStatus;
 import br.edu.ufape.todozao.model.User;
 import br.edu.ufape.todozao.repository.ProjectRepository;
 import br.edu.ufape.todozao.repository.TaskRepository;
-import br.edu.ufape.todozao.repository.TaskStatusRepository;
 import br.edu.ufape.todozao.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,16 +17,13 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final ProjectRepository projectRepository;
-    private final TaskStatusRepository taskStatusRepository;
 
     public TaskService(TaskRepository taskRepository,
                        UserRepository userRepository,
-                       ProjectRepository projectRepository,
-                       TaskStatusRepository taskStatusRepository) {
+                       ProjectRepository projectRepository) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.projectRepository = projectRepository;
-        this.taskStatusRepository = taskStatusRepository;
     }
 
     // ✅ CASO DE USO
@@ -34,20 +31,29 @@ public class TaskService {
 
         // 1️⃣ validar invariantes cedo
         User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new UserNotFoundException(dto.getUserId()));
 
-        TaskStatus status = taskStatusRepository.findById(dto.getTaskStatusId())
-                .orElseThrow(() -> new RuntimeException("Status inválido"));
+        // Converter String para enum TaskStatus
+        TaskStatus status;
+        if (dto.getStatus() != null && !dto.getStatus().isEmpty()) {
+            try {
+                status = TaskStatus.valueOf(dto.getStatus().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new InvalidTaskStatusException(dto.getStatus());
+            }
+        } else {
+            status = TaskStatus.PENDING; // Status padrão
+        }
 
         Project project = null;
         if (dto.getProjectId() != null) {
             project = projectRepository.findById(dto.getProjectId())
-                    .orElseThrow(() -> new RuntimeException("Projeto não encontrado"));
+                    .orElseThrow(() -> new ProjectNotFoundException(dto.getProjectId()));
         }
 
         // 2️⃣ idempotência simples
         if (taskRepository.existsByTitleAndUserId(dto.getTitle(), user.getId())) {
-            throw new RuntimeException("Task duplicada para esse usuário");
+            throw new TaskDuplicateException("Task duplicada para esse usuário: " + dto.getTitle());
         }
 
         Task task = Task.builder()

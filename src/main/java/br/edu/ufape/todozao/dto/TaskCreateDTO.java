@@ -19,6 +19,5 @@ public class TaskCreateDTO {
 
     private Long projectId;
 
-    @NotNull
-    private Long taskStatusId;
+    private String status;
 }

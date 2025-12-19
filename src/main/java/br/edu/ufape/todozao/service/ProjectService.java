@@ -1,6 +1,8 @@
 package br.edu.ufape.todozao.service;
 
 import br.edu.ufape.todozao.dto.ProjectCreateDTO;
+import br.edu.ufape.todozao.exception.ProjectDuplicateException;
+import br.edu.ufape.todozao.exception.UserNotFoundException;
 import br.edu.ufape.todozao.model.Project;
 import br.edu.ufape.todozao.model.User;
 import br.edu.ufape.todozao.repository.ProjectRepository;
@@ -28,10 +30,10 @@ public class ProjectService {
         }
 
         User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new UserNotFoundException(dto.getUserId()));
 
         if (projectRepository.existsByNameAndUserId(dto.getName(), user.getId())) {
-            throw new RuntimeException("Projeto já existe para esse usuário");
+            throw new ProjectDuplicateException("Projeto já existe para esse usuário: " + dto.getName());
         }
 
         Project project = Project.builder()
