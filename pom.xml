@@ -28,7 +28,6 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
-		<querydsl.version>5.0.0</querydsl.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -64,19 +63,6 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.querydsl</groupId>
-			<artifactId>querydsl-apt</artifactId>
-			<version>5.0.0</version>
-			<classifier>jakarta</classifier>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.querydsl</groupId>
-			<artifactId>querydsl-jpa</artifactId>
-			<version>5.0.0</version>
-			<classifier>jakarta</classifier>
-		</dependency>
 	</dependencies>
 
 	<build>
@@ -89,29 +75,10 @@
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
-							<version>${lombok.version}</version>
-						</path>
-						<path>
-							<groupId>com.querydsl</groupId>
-							<artifactId>querydsl-apt</artifactId>
-							<version>5.0.0</version>
-							<classifier>jakarta</classifier>
-							<exclusions>
-								<exclusion>
-									<groupId>jakarta.persistence</groupId>
-									<artifactId>jakarta.persistence-api</artifactId>
-								</exclusion>
-							</exclusions>
-						</path>
-						<path>
-							<groupId>jakarta.persistence</groupId>
-							<artifactId>jakarta.persistence-api</artifactId>
-							<version>3.1.0</version>
 						</path>
 					</annotationProcessorPaths>
-					<generatedSourcesDirectory>${project.build.directory}/generated-sources/annotations</generatedSourcesDirectory>
-                    <source>21</source>
-                    <target>21</target>
+                    <source>8</source>
+                    <target>8</target>
                 </configuration>
 			</plugin>
 			<plugin>
